@@ -1,0 +1,362 @@
+openapi: 3.0.3
+info:
+  title: Veganpayments API
+  version: 1.0.0
+  description: This is API documentation on backend service
+paths:
+  /api/users/:
+    get:
+      operationId: api_users_retrieve
+      summary: Get User Profile
+      tags:
+      - User
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+  /api/users/auth/refresh/:
+    post:
+      operationId: api_users_auth_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      summary: Get Refresh Token
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+  /api/users/auth/signin/:
+    post:
+      operationId: api_users_auth_signin_create
+      summary: Get Access Token
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MFATokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MFATokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MFATokenObtainPair'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+  /api/users/auth/signup/:
+    post:
+      operationId: api_users_auth_signup_create
+      summary: Registration
+      tags:
+      - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+  /api/users/settings/:
+    patch:
+      operationId: api_users_settings_partial_update
+      summary: Update Settings
+      tags:
+      - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSettings'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSettings'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSettings'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSettings'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+  /api/users/totp/confirm/:
+    post:
+      operationId: api_users_totp_confirm_create
+      summary: Confirm TOTP
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TOTPConfirm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TOTPConfirm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TOTPConfirm'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+  /api/users/totp/connect/:
+    post:
+      operationId: api_users_totp_connect_create
+      summary: Connect TOTP
+      tags:
+      - Authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TOTPSetup'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status_code:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      required:
+      - details
+      - error
+      - message
+      - status_code
+    MFATokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        code:
+          type: string
+          description: Code for MFA and unblock
+        remember_device:
+          type: boolean
+          default: false
+        device_id:
+          type: string
+          description: Secure fingerprint
+          maxLength: 64
+      required:
+      - device_id
+      - password
+      - username
+    MfaTypeEnum:
+      enum:
+      - sms
+      - totp
+      type: string
+      description: |-
+        * `sms` - SMS
+        * `totp` - TOTP
+    PatchedUserSettings:
+      type: object
+      properties:
+        mfa_type:
+          $ref: '#/components/schemas/MfaTypeEnum'
+    TOTPConfirm:
+      type: object
+      properties:
+        code:
+          type: string
+      required:
+      - code
+    TOTPSetup:
+      type: object
+      properties:
+        otp_uri:
+          type: string
+        qr_code:
+          type: string
+      required:
+      - otp_uri
+      - qr_code
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          pattern: ^[a-zA-Z0-9_]+$
+          maxLength: 150
+          minLength: 5
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+      required:
+      - id
+      - password
+      - username
+    UserSettings:
+      type: object
+      properties:
+        mfa_type:
+          $ref: '#/components/schemas/MfaTypeEnum'
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

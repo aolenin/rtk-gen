@@ -1,0 +1,12 @@
+{
+  "name": "openapi-gen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "api:download:yaml": "curl -L -o openapi.yaml https://api.veganpayments.dev/docs/schema",
+    "api:gen:by-yaml": "npx @rtk-query/codegen-openapi api-codegen.config.js",
+    "api:gen:start": "npm run api:download:yaml && npm run api:gen:by-yaml"
+  },
+  "private": false
+}
